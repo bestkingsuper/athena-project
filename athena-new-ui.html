@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Athena - Enterprise AI Solutions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2d2d2d;
+            --secondary-color: #d4af37;
+            --accent-color: #f5f5f5;
+            --text-dark: #1a1a1a;
+            --text-light: #666;
+            --border-color: #e0e0e0;
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 30px 80px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header & Navigation */
+        header {
+            background: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--secondary-color);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--secondary-color);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Floating Phone Bubble Button */
+        .phone-bubble-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #e6a028 100%);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            z-index: 999;
+        }
+
+        .phone-bubble-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.6);
+        }
+
+        .phone-bubble-btn.active {
+            background: linear-gradient(135deg, #f44336 0%, #e53935 100%);
+            animation: pulse-bubble 1s infinite;
+        }
+
+        @keyframes pulse-bubble {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(244, 67, 54, 0.6);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(244, 67, 54, 0.8);
+            }
+        }
+
+        /* Voice Panel - Right Side */
+        .voice-panel {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 450px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 30px rgba(0, 0, 0, 0.15);
+            z-index: 998;
+            display: none;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            padding-top: 20px;
+        }
+
+        .voice-panel.active {
+            display: flex;
+            transform: translateX(0);
+        }
+
+        .voice-panel-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .voice-panel-header h2 {
+            color: var(--text-dark);
+            font-size: 1.3rem;
+        }
+
+        .close-panel-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s ease;
+        }
+
+        .close-panel-btn:hover {
+            color: var(--text-dark);
+        }
+
+        /* Chat History */
+        .chat-history {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .chat-message {
+            display: flex;
+            margin-bottom: 1rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chat-message.user {
+            justify-content: flex-end;
+        }
+
+        .chat-message.ai {
+            justify-content: flex-start;
+        }
+
+        .chat-bubble {
+            max-width: 75%;
+            padding: 0.75rem 1rem;
+            border-radius: 18px;
+            word-wrap: break-word;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .chat-message.user .chat-bubble {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .chat-message.ai .chat-bubble {
+            background: #e8e8e8;
+            color: var(--text-dark);
+        }
+
+        .chat-status {
+            text-align: center;
+            padding: 0.75rem;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin: 0.5rem 0;
+        }
+
+        .chat-status.listening {
+            color: #2e7d32;
+            animation: pulse 1s infinite;
+        }
+
+        .chat-status.processing {
+            color: #e65100;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Voice Controls */
+        .voice-controls {
+            padding: 1.5rem;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .voice-btn {
+            flex: 1;
+            padding: 0.9rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .voice-btn.start {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #e6a028 100%);
+            color: var(--primary-color);
+        }
+
+        .voice-btn.start:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .voice-btn.stop {
+            background: linear-gradient(135deg, #f44336 0%, #e53935 100%);
+            color: white;
+        }
+
+        .voice-btn.stop:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(244, 67, 54, 0.3);
+        }
+
+        .voice-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Voice Metrics */
+        .voice-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            padding: 0 1.5rem 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+
+        /* Main Content */
+        .hero-section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            min-height: calc(100vh - 80px);
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+
+        .hero-content h1 .highlight {
+            color: var(--secondary-color);
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #e6a028 100%);
+            color: var(--primary-color);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Phone Mockup */
+        .phone-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .phone-frame {
+            position: relative;
+            width: 360px;
+            height: 720px;
+            background: var(--primary-color);
+            border-radius: 45px;
+            padding: 15px;
+            box-shadow: var(--shadow-hover);
+            overflow: hidden;
+            border: 8px solid var(--primary-color);
+        }
+
+        .phone-frame::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 25px;
+            background: var(--primary-color);
+            border-radius: 0 0 30px 30px;
+            z-index: 10;
+        }
+
+        .phone-frame::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: var(--primary-color);
+            border-radius: 30px 30px 0 0;
+            z-index: 10;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 40px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .phone-screen iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Industries Section */
+        .industries-section {
+            max-width: 1400px;
+            margin: 6rem auto;
+            padding: 0 2rem;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .section-title .highlight {
+            color: var(--secondary-color);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 4rem;
+        }
+
+        .industries-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .industry-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            text-align: center;
+            border-top: 4px solid var(--secondary-color);
+        }
+
+        .industry-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow);
+        }
+
+        .industry-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .industry-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        /* Features Section */
+        .features-section {
+            max-width: 1400px;
+            margin: 6rem auto;
+            padding: 0 2rem;
+            background: var(--accent-color);
+            border-radius: 20px;
+            padding: 4rem 2rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .feature-list li {
+            padding: 0.5rem 0;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-list li::before {
+            content: '✓';
+            color: var(--secondary-color);
+            font-weight: bold;
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem;
+            margin-top: 6rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            margin-bottom: 2rem;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 1.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--secondary-color);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-section {
+                grid-template-columns: 1fr;
+                min-height: auto;
+            }
+
+            .phone-frame {
+                width: 300px;
+                height: 600px;
+            }
+
+            .voice-panel {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+
+            .phone-frame {
+                width: 280px;
+                height: 560px;
+            }
+
+            .voice-panel {
+                width: 100%;
+            }
+
+            .chat-bubble {
+                max-width: 85%;
+            }
+
+            .phone-bubble-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInAnimation {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-content, .phone-container {
+            animation: fadeInAnimation 0.8s ease;
+        }
+
+        .industries-grid > * {
+            animation: fadeInAnimation 0.8s ease-out backwards;
+        }
+
+        .industries-grid > *:nth-child(1) { animation-delay: 0.1s; }
+        .industries-grid > *:nth-child(2) { animation-delay: 0.2s; }
+        .industries-grid > *:nth-child(3) { animation-delay: 0.3s; }
+        .industries-grid > *:nth-child(4) { animation-delay: 0.4s; }
+        .industries-grid > *:nth-child(5) { animation-delay: 0.5s; }
+        .industries-grid > *:nth-child(6) { animation-delay: 0.6s; }
+    </style>
+    <link rel="stylesheet" href="athena-voice-call.css">
+
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="logo">✨ Athena</div>
+            <div class="header-right">
+                <nav>
+                    <ul class="nav-links">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#industries">Industries</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Floating Phone Bubble Button -->
+    <button class="phone-bubble-btn" id="phoneBubbleBtn" title="Call Athena">☎️</button>
+
+    <!-- Voice Panel - Right Side -->
+    <div class="voice-panel" id="voicePanel">
+        <div class="voice-panel-header">
+          <h2>Athena Call</h2>
+          <button class="close-panel-btn" id="closePanelBtn">×</button>
+        </div>
+      
+        <!-- Chat History Container -->
+        <div id="chatHistory" class="chat-history"></div>
+      
+        <!-- Status Text -->
+        <div id="chatStatus" class="chat-status">Ready to chat. Click Start Call to begin.</div>
+      
+        <!-- Voice Controls -->
+        <div class="voice-controls">
+          <button class="voice-btn start" id="startCallBtn">🎙️ Start Call</button>
+          <button class="voice-btn stop" id="stopCallBtn" disabled>📞 End Call</button>
+          <button class="voice-btn mute" id="muteBtn">🎤 Mute</button>
+        </div>
+    </div>
+      
+
+    <!-- Hero Section -->
+    <section class="hero-section" id="home">
+        <div class="hero-content">
+            <h1>Enterprise <span class="highlight">AI Solutions</span> for Every Business</h1>
+            <p>Athena delivers intelligent automation, AI voice calling, smart booking, and advanced analytics—transforming how any business operates. From salons to healthcare, hospitality to retail, we empower growth with cutting-edge AI.</p>
+            <button class="cta-button" id="ctaButton">Get Started Today</button>
+        </div>
+
+        <div class="phone-container">
+            <div class="phone-frame">
+                <div class="phone-screen">
+                    <iframe src="https://minkhairlounge.com/" title="Demo Business Website"></iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Industries Section -->
+    <section class="industries-section" id="industries">
+        <h2 class="section-title">Built for <span class="highlight">Any Industry</span></h2>
+        <p class="section-subtitle">Athena works across every business vertical</p>
+
+        <div class="industries-grid">
+            <div class="industry-card">
+                <div class="icon">💇</div>
+                <h3>Beauty & Salons</h3>
+                <p>Intelligent booking, stylist management, and customer preferences automation</p>
+            </div>
+
+            <div class="industry-card">
+                <div class="icon">🏥</div>
+                <h3>Healthcare</h3>
+                <p>Patient scheduling, AI voice calls, appointment reminders, and care coordination</p>
+            </div>
+
+            <div class="industry-card">
+                <div class="icon">🏨</div>
+                <h3>Hospitality</h3>
+                <p>Reservation management, guest services automation, and personalized experiences</p>
+            </div>
+
+            <div class="industry-card">
+                <div class="icon">🛍️</div>
+                <h3>Retail</h3>
+                <p>Customer engagement, inventory alerts, and sales automation</p>
+            </div>
+
+            <div class="industry-card">
+                <div class="icon">🏋️</div>
+                <h3>Fitness & Wellness</h3>
+                <p>Class scheduling, membership management, and member engagement</p>
+            </div>
+
+            <div class="industry-card">
+                <div class="icon">🍽️</div>
+                <h3>Food & Beverage</h3>
+                <p>Table reservations, order management, and customer retention</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <h2 class="section-title">Powerful <span class="highlight">AI-Driven Features</span></h2>
+        <p class="section-subtitle">Everything you need to automate and scale your business</p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📞</div>
+                <h3>AI Voice Caller</h3>
+                <p>Automated outbound calling for appointments, reminders, follow-ups, and customer service. Natural language processing with human-like conversation.</p>
+                <ul class="feature-list">
+                    <li>24/7 operation</li>
+                    <li>Multi-language support</li>
+                    <li>Call recording & analytics</li>
+                    <li>Integration with CRM</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <h3>AI Chat Assistant</h3>
+                <p>Intelligent conversational AI handling customer inquiries, answering FAQs, processing bookings, and escalating to humans when needed.</p>
+                <ul class="feature-list">
+                    <li>Instant 24/7 support</li>
+                    <li>Smart intent recognition</li>
+                    <li>Automated booking</li>
+                    <li>Sentiment analysis</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📅</div>
+                <h3>Intelligent Booking</h3>
+                <p>AI-powered scheduling that optimizes appointments, manages resources, and learns from business patterns to maximize efficiency and revenue.</p>
+                <ul class="feature-list">
+                    <li>Real-time optimization</li>
+                    <li>Automated reminders</li>
+                    <li>No-show prediction</li>
+                    <li>Resource allocation</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Advanced Analytics</h3>
+                <p>Real-time dashboards with predictive insights. Track revenue, customer behavior, team performance, and actionable business intelligence.</p>
+                <ul class="feature-list">
+                    <li>Custom dashboards</li>
+                    <li>Predictive analytics</li>
+                    <li>Revenue optimization</li>
+                    <li>Performance metrics</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">👥</div>
+                <h3>Customer Intelligence</h3>
+                <p>Unified customer profiles with complete history, preferences, and AI-driven recommendations for personalized experiences.</p>
+                <ul class="feature-list">
+                    <li>360° customer view</li>
+                    <li>Preference tracking</li>
+                    <li>Churn prediction</li>
+                    <li>Loyalty automation</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔐</div>
+                <h3>Enterprise Security</h3>
+                <p>Bank-level encryption, GDPR compliance, SOC 2 certification, and advanced access controls to protect your business and customer data.</p>
+                <ul class="feature-list">
+                    <li>256-bit encryption</li>
+                    <li>GDPR compliant</li>
+                    <li>SOC 2 Type II</li>
+                    <li>Role-based access</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#home">Home</a>
+                <a href="#industries">Industries</a>
+                <a href="#features">Features</a>
+                <a href="#contact">Contact</a>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Athena AI. All rights reserved. | Enterprise AI Solutions for Every Business</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="athena-voice-call.js"></script>
+</body>
+</html>
