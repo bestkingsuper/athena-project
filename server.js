@@ -1,4 +1,6 @@
 require('dotenv').config();
+
+const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -13,18 +15,19 @@ app.use(express.static('public'));
 
 // Serve HTML
 app.get('/', (req, res) => {
-    const filePath = path.join(__dirname, 'public', 'athena-new-ui.html');
-    console.log('DEBUG __dirname =', __dirname);
-    console.log('DEBUG filePath =', filePath);
-  
-    fs.access(filePath, fs.constants.R_OK, (err) => {
-      if (err) {
-        console.error('DEBUG fs.access error:', err);
-        return res.status(500).send('Cannot read athena-new-ui.html');
-      }
-      res.sendFile(filePath);
-    });
+  const filePath = path.join(__dirname, 'public', 'athena-new-ui.html');
+  console.log('DEBUG __dirname =', __dirname);
+  console.log('DEBUG filePath =', filePath);
+
+  fs.access(filePath, fs.constants.R_OK, (err) => {
+    if (err) {
+      console.error('DEBUG fs.access error:', err);
+      return res.status(500).send('Cannot read athena-new-ui.html');
+    }
+
+    res.sendFile(filePath);
   });
+});
 
 // API: Chat endpoint
 app.post('/api/chat', async (req, res) => {
@@ -41,7 +44,6 @@ app.post('/api/chat', async (req, res) => {
     }
 
     console.log(`📤 Sending to Groq API...`);
-
     const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -87,7 +89,6 @@ app.post('/api/voice', async (req, res) => {
     }
 
     console.log(`🔊 Generating voice...`);
-
     const elevenLabsResponse = await fetch(
       `https://api.elevenlabs.io/v1/text-to-speech/${process.env.ELEVENLABS_VOICE_ID}`,
       {
@@ -115,7 +116,6 @@ app.post('/api/voice', async (req, res) => {
 
     const audioBuffer = await elevenLabsResponse.arrayBuffer();
     console.log(`✅ Voice generated (${audioBuffer.byteLength} bytes)`);
-
     res.set('Content-Type', 'audio/mpeg');
     res.set('Content-Length', audioBuffer.byteLength);
     res.send(Buffer.from(audioBuffer));
@@ -135,9 +135,9 @@ app.get('/api/health', (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server started on port ${PORT}`);
   console.log(`✅ API endpoints:`);
-  console.log(`   - POST /api/chat`);
-  console.log(`   - POST /api/voice`);
-  console.log(`   - GET /api/health`);
+  console.log(` - POST /api/chat`);
+  console.log(` - POST /api/voice`);
+  console.log(` - GET /api/health`);
 });
 
 process.on('SIGTERM', () => {
