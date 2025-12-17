@@ -13,8 +13,18 @@ app.use(express.static('public'));
 
 // Serve HTML
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'athena-new-ui.html'));
-});
+    const filePath = path.join(__dirname, 'public', 'athena-new-ui.html');
+    console.log('DEBUG __dirname =', __dirname);
+    console.log('DEBUG filePath =', filePath);
+  
+    fs.access(filePath, fs.constants.R_OK, (err) => {
+      if (err) {
+        console.error('DEBUG fs.access error:', err);
+        return res.status(500).send('Cannot read athena-new-ui.html');
+      }
+      res.sendFile(filePath);
+    });
+  });
 
 // API: Chat endpoint
 app.post('/api/chat', async (req, res) => {
