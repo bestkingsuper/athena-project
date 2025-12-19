@@ -296,7 +296,7 @@ async function handleUserSpeechEnd(userMessage) {
 				model: "llama-3.3-70b-versatile",
 				messages: messages,
 				temperature: 0.7,
-				max_tokens: 150
+				max_tokens: 50
 			})
 		});
 

@@ -24,6 +24,8 @@ const MAX_RECOGNITION_RETRIES = 5;
 document.addEventListener("DOMContentLoaded", function() {
 	console.log("=== Athena Voice Call System Starting ===");
 	
+	setupMobileWarning();  // <-- ADD THIS
+	
 	// Проверка HTTPS (обязателен для микрофона)
 	if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
 		console.warn("⚠️ Warning: HTTPS required for microphone access in production");
@@ -600,4 +602,50 @@ function addMessageToUI(text, sender, isTyping = false) {
 function removeTypingIndicator() {
     const typing = document.querySelector(".typing-indicator");
     if (typing) typing.remove();
+}
+
+
+// ===== MOBILE DETECTION =====
+function isMobileDevice() {
+return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+function setupMobileWarning() {
+	const isMobile = isMobileDevice();
+	const phoneBtn = document.getElementById("phoneBubbleBtn");
+	const startBtn = document.getElementById("startCallBtn");
+	const voicePanel = document.getElementById("voicePanel");
+
+	if (isMobile) {
+		console.warn("📱 Mobile device detected - disabling voice call");
+		
+		// Hide voice call button
+		if (phoneBtn) phoneBtn.style.display = "none";
+		
+		// Disable voice call start button
+		if (startBtn) startBtn.disabled = true;
+		if (startBtn) startBtn.title = "Voice calls not supported on mobile. Use text chat instead.";
+		
+		// Show warning banner
+		const banner = document.createElement("div");
+		banner.id = "mobile-warning";
+		banner.style.cssText = `
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		background-color: #f59e0b;
+		color: white;
+		padding: 12px 20px;
+		text-align: center;
+		font-weight: 600;
+		z-index: 1000;
+		font-size: 14px;
+		`;
+		banner.textContent = "📱 Voice calls not supported on mobile. Use text chat (💬) instead.";
+		document.body.insertBefore(banner, document.body.firstChild);
+		
+		// Adjust body padding to account for banner
+		document.body.style.paddingTop = "44px";
+	}
 }
