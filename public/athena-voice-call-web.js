@@ -57,6 +57,7 @@ function setupSpeechRecognition() {
 		recognitionRetryCount = 0;
 		isListeningStarted = true;
 		updateStatus("Listening...");
+		document.getElementById('stopCallBtn')?.classList.add('user-speaking');
 	};
 
 	recognition.onend = () => {
@@ -64,6 +65,7 @@ function setupSpeechRecognition() {
 		recognitionState = "IDLE";
 		isListeningStarted = false;
 		clearTimeout(recognitionStartTimeout);
+		document.getElementById('stopCallBtn')?.classList.remove('user-speaking');
 	};
 
 	recognition.onerror = (event) => {
@@ -109,19 +111,23 @@ function setupSpeechRecognition() {
 }
 
 // ===== EVENT LISTENERS =====
+// ===== EVENT LISTENERS =====
+
 function setupEventListeners() {
 	const phoneBtn = document.getElementById("phoneBubbleBtn");
 	const startBtn = document.getElementById("startCallBtn");
 	const stopBtn = document.getElementById("stopCallBtn");
 	const closeBtn = document.getElementById("closePanelBtn");
-
+  
 	if (phoneBtn) phoneBtn.addEventListener("click", toggleCall);
 	if (startBtn) startBtn.addEventListener("click", startCall);
+  
 	if (stopBtn) stopBtn.addEventListener("click", endCall);
-	if (closeBtn) closeBtn.addEventListener("click", endCall);
-
+	if (closeBtn) closeBtn.addEventListener("click", endCall); // This makes the 'X' button work like hang up
+  
 	console.log("✅ Event listeners attached");
-}
+  }
+  
 
 // ===== START CALL =====
 function startCall() {
@@ -140,7 +146,7 @@ function startCall() {
 	const chatHistory = document.getElementById("chatHistory");
 
 	if (panel) panel.classList.add("active");
-	if (phoneBtn) phoneBtn.classList.add("active");
+	if (phoneBtn) phoneBtn.classList.remove("active");
 	if (startBtn) startBtn.disabled = true;
 	if (stopBtn) stopBtn.disabled = false;
 	if (chatHistory) chatHistory.innerHTML = "";
@@ -151,16 +157,18 @@ function startCall() {
 
 // ===== PLAY GREETING =====
 async function playGreeting() {
-	const greeting = "Hi! I'm Athena, your AI assistant. This is a demo. Please pretend you're calling to schedule an appointment. How can I help?";
+	// The greeting will come from Groq with the full business context
+	const greeting = "Hi! I'm Athena, your AI assistant. This is a demo. Please pretend you're calling to schedule an appointment for your dog. How can I help?";
 	displayMessage(greeting, "ai");
 	conversationHistory.push({ role: "assistant", content: greeting });
 	console.log("🎤 Playing greeting...");
 	await playVoice(greeting);
 	if (callActive && !isSpeaking) {
-		console.log("🎧 Starting to listen after greeting");
-		startListening();
+	  console.log("🎧 Starting to listen after greeting");
+	  startListening();
 	}
-}
+  }
+  
 
 // ===== START LISTENING =====
 function startListening() {
@@ -325,6 +333,7 @@ async function handleUserSpeechEnd(userMessage) {
 // ===== PLAY VOICE =====
 async function playVoice(text) {
 	isSpeaking = true;
+	document.getElementById('avatarContainer')?.classList.add('speaking'); // <-- ADD THIS LINE
 	try {
 		console.log("🔊 Generating voice...");
 		
@@ -349,6 +358,7 @@ async function playVoice(text) {
 		currentAudio.onended = () => {
 			console.log("✅ Voice finished");
 			isSpeaking = false;
+			document.getElementById('avatarContainer')?.classList.remove('speaking'); // <-- ADD THIS LINE
 			updateStatus("Connected");
 			if (callActive) {
 				setTimeout(() => startListening(), 300);
@@ -432,13 +442,14 @@ function endCall() {
 	const stopBtn = document.getElementById("stopCallBtn");
 	const chatHistory = document.getElementById("chatHistory");
 
-	if (panel) panel.classList.remove("active");
-	if (phoneBtn) phoneBtn.classList.remove("active");
+	panel.classList.remove("active");
+	phoneBtn.classList.add("active");
 	if (startBtn) startBtn.disabled = false;
 	if (stopBtn) stopBtn.disabled = true;
 	if (chatHistory) chatHistory.innerHTML = "";
 
 	conversationHistory = [];
+	document.getElementById('stopCallBtn')?.classList.remove('user-speaking');
 	updateStatus("Call ended");
 }
 
@@ -449,4 +460,144 @@ function toggleCall() {
 	} else {
 		startCall();
 	}
+}
+
+// ===========================================
+// NEW TEXT CHAT LOGIC
+// ===========================================
+
+let isChatOpen = false;
+let textConversationHistory = [];
+
+// Initialize Chat Listeners
+const chatBtn = document.getElementById("chatModeBtn");
+const chatInput = document.getElementById("textChatInput");
+const chatSendBtn = document.getElementById("textChatSendBtn");
+
+if (chatBtn) chatBtn.addEventListener("click", toggleTextChat);
+if (chatSendBtn) chatSendBtn.addEventListener("click", handleTextSend);
+if (chatInput) {
+    chatInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") handleTextSend();
+    });
+}
+
+function toggleTextChat() {
+    const chatPanel = document.getElementById("textChatPanel");
+    
+    if (!isChatOpen) {
+        // OPEN CHAT
+        console.log("💬 Opening Text Chat...");
+        isChatOpen = true;
+        chatPanel.classList.add("active");
+        chatBtn.classList.add("active"); // Turns button red/active
+        
+        // Hide Voice Panel if open
+        if (callActive) {
+            endCall(); // This will close the voice panel
+        }
+        
+        // Start New Conversation & Get Greeting
+        startNewTextConversation();
+        
+    } else {
+        // CLOSE CHAT
+        console.log("💬 Closing Text Chat...");
+        isChatOpen = false;
+        chatPanel.classList.remove("active");
+        chatBtn.classList.remove("active");
+    }
+}
+
+async function startNewTextConversation() {
+	const messagesContainer = document.getElementById("textChatMessages");
+	messagesContainer.innerHTML = ""; // Clear history
+	textConversationHistory = [];
+  
+	// Add "Typing..." indicator
+	addMessageToUI("...", "ai", true);
+  
+	// Generate Greeting from AI with full business context
+	try {
+	  // Send empty user message to trigger system prompt greeting
+	  const initialMessages = [
+		{
+		  role: "user",
+		  content: "Say hello and introduce yourself as Athena, the AI front desk manager for D's Doggy Daycare. Ask me to pretend I'm calling to schedule an appointment."
+		}
+	  ];
+  
+	  const response = await fetch("/api/chat", {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({ messages: initialMessages })
+	  });
+  
+	  const data = await response.json();
+	  const aiGreeting = data.choices[0].message.content;
+  
+	  // Remove typing indicator and show message
+	  removeTypingIndicator();
+	  addMessageToUI(aiGreeting, "ai");
+	  
+	  // Initialize conversation history with the greeting
+	  textConversationHistory.push({ role: "assistant", content: aiGreeting });
+  
+	} catch (error) {
+	  console.error("Error getting greeting:", error);
+	  removeTypingIndicator();
+	  addMessageToUI("Hi! I'm Athena, your AI assistant. How can I help you schedule an appointment for your dog?", "ai");
+	}
+  }
+  
+async function handleTextSend() {
+    const input = document.getElementById("textChatInput");
+    const userText = input.value.trim();
+    
+    if (!userText) return;
+    
+    // 1. Display User Message
+    addMessageToUI(userText, "user");
+    input.value = "";
+    textConversationHistory.push({ role: "user", content: userText });
+    
+    // 2. Show Typing Indicator
+    addMessageToUI("...", "ai", true);
+    
+    // 3. Call API
+    try {
+        const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ messages: textConversationHistory })
+        });
+        
+        const data = await response.json();
+        const aiResponse = data.choices[0].message.content;
+        
+        // 4. Display AI Response
+        removeTypingIndicator();
+        addMessageToUI(aiResponse, "ai");
+        textConversationHistory.push({ role: "assistant", content: aiResponse });
+        
+    } catch (error) {
+        console.error("Chat Error:", error);
+        removeTypingIndicator();
+        addMessageToUI("Sorry, I'm having trouble connecting right now.", "ai");
+    }
+}
+
+// UI Helpers
+function addMessageToUI(text, sender, isTyping = false) {
+    const container = document.getElementById("textChatMessages");
+    const div = document.createElement("div");
+    div.className = `message ${sender} ${isTyping ? 'typing-indicator' : ''}`;
+    div.textContent = text;
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+}
+
+function removeTypingIndicator() {
+    const typing = document.querySelector(".typing-indicator");
+    if (typing) typing.remove();
 }

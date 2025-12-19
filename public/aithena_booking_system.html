@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIthena - Book Your Strategy Call</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #f6ad55;
+            --primary-dark: #ff9d3b;
+            --secondary: #188bf6;
+            --white: #ffffff;
+            --gray: #cbd5e0;
+            --dark: #1a202c;
+            --black: #000000;
+            --text-dark: #2d3748;
+            --light-gray: #f7fafc;
+            --border-light: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            color: var(--white);
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+
+        .header h1 .highlight {
+            color: var(--primary);
+        }
+
+        .header p {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 5px;
+        }
+
+        .header .subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 24px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--border-light);
+            z-index: 0;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--light-gray);
+            border: 2px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 18px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-number {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
+        .step.completed .step-number {
+            background: #48bb78;
+            color: var(--white);
+            border-color: #48bb78;
+        }
+
+        .step-label {
+            font-size: 12px;
+            color: var(--text-dark);
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        input[type="email"],
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="tel"]:focus,
+        input[type="email"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(246, 173, 85, 0.1);
+        }
+
+        input::placeholder {
+            color: #a0aec0;
+        }
+
+        .phone-input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+        .country-selector {
+            width: 80px;
+            padding: 12px;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .country-selector:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .phone-input-wrapper input {
+            flex: 1;
+        }
+
+        .form-group.radio-group {
+            margin-bottom: 30px;
+        }
+
+        .radio-group label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .radio-option:hover {
+            border-color: var(--primary);
+            background: rgba(246, 173, 85, 0.05);
+        }
+
+        .radio-option input[type="radio"] {
+            margin-right: 12px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .radio-option input[type="radio"]:checked + span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .radio-option.selected {
+            border-color: var(--primary);
+            background: rgba(246, 173, 85, 0.1);
+        }
+
+        /* Calendar Styles */
+        .calendar-wrapper {
+            margin-bottom: 30px;
+        }
+
+        .calendar {
+            background: var(--light-gray);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .calendar-header h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .calendar-nav button {
+            width: 36px;
+            height: 36px;
+            border: 2px solid var(--border-light);
+            background: var(--white);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-nav button:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .weekday {
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 12px;
+            padding: 8px;
+        }
+
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            cursor: pointer;
+            background: var(--white);
+            font-weight: 500;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .day:hover:not(.empty):not(.disabled) {
+            border-color: var(--primary);
+            background: rgba(246, 173, 85, 0.05);
+        }
+
+        .day.empty {
+            cursor: default;
+            background: transparent;
+            border: none;
+        }
+
+        .day.disabled {
+            color: #cbd5e0;
+            cursor: not-allowed;
+            background: transparent;
+            border: none;
+        }
+
+        .day.available {
+            border-color: var(--border-light);
+            cursor: pointer;
+        }
+
+        .day.available.selected {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--white);
+            font-weight: 700;
+        }
+
+        .day.today {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* Time Slots */
+        .time-slots {
+            margin-top: 30px;
+        }
+
+        .time-slots h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        .time-slot {
+            padding: 12px 16px;
+            border: 2px solid var(--border-light);
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--white);
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 14px;
+        }
+
+        .time-slot:hover {
+            border-color: var(--primary);
+            background: rgba(246, 173, 85, 0.05);
+        }
+
+        .time-slot.selected {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(246, 173, 85, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        /* Thank You Page */
+        .thank-you-content {
+            text-align: center;
+        }
+
+        .thank-you-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .thank-you-content h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+
+        .thank-you-content p {
+            color: #718096;
+            font-size: 15px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .rules-section {
+            background: var(--light-gray);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: left;
+            margin: 25px 0;
+        }
+
+        .rules-section h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+
+        .rules-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .rules-list li {
+            padding: 10px 0;
+            color: #4a5568;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border-light);
+            line-height: 1.6;
+        }
+
+        .rules-list li:last-child {
+            border-bottom: none;
+        }
+
+        .rules-list li:before {
+            content: "✓ ";
+            color: var(--primary);
+            font-weight: 700;
+            margin-right: 8px;
+        }
+
+        .videos-section {
+            margin-top: 30px;
+        }
+
+        .videos-section h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .video-placeholder {
+            aspect-ratio: 16/9;
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
+            border: 2px dashed var(--border-light);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .video-placeholder iframe {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+        }
+
+        /* Confirmation Details */
+        .confirmation-box {
+            background: rgba(246, 173, 85, 0.1);
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 25px 0;
+            text-align: left;
+        }
+
+        .confirmation-box p {
+            margin: 8px 0;
+            color: var(--text-dark);
+            font-size: 14px;
+        }
+
+        .confirmation-box strong {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Error Message */
+        .error-message {
+            display: none;
+            background: #fed7d7;
+            color: #c53030;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #c53030;
+            font-size: 14px;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 25px 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .content {
+                padding: 25px 20px;
+            }
+
+            .step-indicator {
+                margin-bottom: 30px;
+            }
+
+            .step-label {
+                font-size: 10px;
+            }
+
+            .button-group {
+                flex-direction: column-reverse;
+            }
+
+            .time-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .videos-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Book Your <span class="highlight">Strategy Call</span></h1>
+            <p>Get personalized AI solutions for your business</p>
+            <p class="subtitle">AIthena - Transform Your Business with AI</p>
+        </div>
+
+        <div class="content">
+            <!-- Step Indicator -->
+            <div class="step-indicator">
+                <div class="step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Your Info</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Business</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Pick Time</div>
+                </div>
+                <div class="step" data-step="4">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Complete</div>
+                </div>
+            </div>
+
+            <!-- Error Message -->
+            <div class="error-message" id="errorMessage"></div>
+
+            <!-- Step 1: Contact Info -->
+            <div class="form-section active" data-section="1">
+                <h2 style="font-size: 22px; font-weight: 700; color: var(--text-dark); margin-bottom: 25px;">Share Your Contact Information</h2>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number *</label>
+                    <div class="phone-input-wrapper">
+                        <select class="country-selector" id="countryCode">
+                            <option value="+1">🇨🇦 +1</option>
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+44">🇬🇧 +44</option>
+                            <option value="+61">🇦🇺 +61</option>
+                        </select>
+                        <input type="tel" id="phone" placeholder="(289) 890-1202" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Full Name *</label>
+                    <input type="text" id="name" placeholder="John Smith" required>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" onclick="goToStep(2)">Continue →</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Business Info -->
+            <div class="form-section" data-section="2">
+                <h2 style="font-size: 22px; font-weight: 700; color: var(--text-dark); margin-bottom: 25px;">Tell Us About Your Business</h2>
+
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" placeholder="you@example.com" required>
+                </div>
+
+                <div class="form-group radio-group">
+                    <label>What Business Do You Run? *</label>
+                    <div id="businessOptions"></div>
+                </div>
+
+                <div class="form-group radio-group">
+                    <label>How Many Calls Do You Get Every Week? *</label>
+                    <div id="callsOptions">
+                        <div class="radio-option" onclick="selectOption(this, 'calls', '1-5 calls')">
+                            <input type="radio" name="calls" value="1-5 calls">
+                            <span>1-5 calls</span>
+                        </div>
+                        <div class="radio-option" onclick="selectOption(this, 'calls', '5-10 calls')">
+                            <input type="radio" name="calls" value="5-10 calls">
+                            <span>5-10 calls</span>
+                        </div>
+                        <div class="radio-option" onclick="selectOption(this, 'calls', '10-20 calls')">
+                            <input type="radio" name="calls" value="10-20 calls">
+                            <span>10-20 calls</span>
+                        </div>
+                        <div class="radio-option" onclick="selectOption(this, 'calls', 'I don\'t even know')">
+                            <input type="radio" name="calls" value="I don't even know">
+                            <span>I don't even know</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group radio-group">
+                    <label>Do You Struggle With Missing Calls? *</label>
+                    <div id="missingCallsOptions">
+                        <div class="radio-option" onclick="selectOption(this, 'missing', 'Yes, all the time')">
+                            <input type="radio" name="missing" value="Yes, all the time">
+                            <span>Yes, all the time</span>
+                        </div>
+                        <div class="radio-option" onclick="selectOption(this, 'missing', 'No, we handle it well')">
+                            <input type="radio" name="missing" value="No, we handle it well">
+                            <span>No, we handle it well</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-secondary" onclick="goToStep(1)">← Back</button>
+                    <button class="btn-primary" onclick="goToStep(3)">Continue →</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Calendar & Time -->
+            <div class="form-section" data-section="3">
+                <h2 style="font-size: 22px; font-weight: 700; color: var(--text-dark); margin-bottom: 25px;">Pick Your Preferred Time</h2>
+
+                <div class="calendar-wrapper">
+                    <div class="calendar">
+                        <div class="calendar-header">
+                            <h3 id="monthYear"></h3>
+                            <div class="calendar-nav">
+                                <button onclick="previousMonth()">←</button>
+                                <button onclick="nextMonth()">→</button>
+                            </div>
+                        </div>
+
+                        <div class="weekdays">
+                            <div class="weekday">Sun</div>
+                            <div class="weekday">Mon</div>
+                            <div class="weekday">Tue</div>
+                            <div class="weekday">Wed</div>
+                            <div class="weekday">Thu</div>
+                            <div class="weekday">Fri</div>
+                            <div class="weekday">Sat</div>
+                        </div>
+
+                        <div class="days" id="daysContainer"></div>
+                    </div>
+
+                    <div class="time-slots">
+                        <h4>Select Your Time (Toronto Time)</h4>
+                        <div class="time-grid" id="timeGrid"></div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-secondary" onclick="goToStep(2)">← Back</button>
+                    <button class="btn-primary" onclick="goToStep(4)">Confirm Time →</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Thank You -->
+            <div class="form-section" data-section="4">
+                <div class="thank-you-content">
+                    <div class="thank-you-icon">✅</div>
+                    <h2>Thanks for Scheduling a Call!</h2>
+                    <p>We're excited to discuss how AIthena can transform your business.</p>
+
+                    <div class="confirmation-box">
+                        <p><strong>Scheduled Call:</strong></p>
+                        <p id="confirmationDetails"></p>
+                    </div>
+
+                    <div class="rules-section">
+                        <h3>📋 Call Guidelines</h3>
+                        <ul class="rules-list">
+                            <li>Choose a quiet environment where you won't be interrupted</li>
+                            <li>No screaming children or loud noise in the background</li>
+                            <li>Please don't call from your car - we want your full attention</li>
+                            <li>We need your full attention so we can provide the highest quality service</li>
+                            <li>Expected call duration: 15-30 minutes</li>
+                            <li>Have your calendar ready to discuss implementation timeline</li>
+                        </ul>
+                    </div>
+
+                    <div class="videos-section">
+                        <h3>🎬 Learn More About AIthena</h3>
+                        <div class="videos-grid">
+                            <div class="video-placeholder" id="video1">
+                                <span>Video 1: How AI Solutions Work</span>
+                            </div>
+                            <div class="video-placeholder" id="video2">
+                                <span>Video 2: Success Stories</span>
+                            </div>
+                            <div class="video-placeholder" id="video3">
+                                <span>Video 3: Implementation Process</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-group" style="margin-top: 30px;">
+                    <button class="btn-secondary" onclick="goToStep(3)">← Change Time</button>
+                    <button class="btn-primary" onclick="submitForm()">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data
+        const businessTypes = [
+            'Pet Care',
+            'Roofing',
+            'Plumbing',
+            'HVAC Services',
+            'Electrical',
+            'Landscaping',
+            'Real Estate',
+            'Dental',
+            'Legal Services',
+            'Medical Practice'
+        ];
+
+        let formData = {
+            phone: '',
+            name: '',
+            email: '',
+            business: '',
+            calls: '',
+            missing: '',
+            selectedDate: null,
+            selectedTime: null
+        };
+
+        let currentMonth = new Date();
+        let availableDates = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeForm();
+            generateBusinessOptions();
+            generateCalendar();
+            setRandomPlaceholders();
+        });
+
+        function setRandomPlaceholders() {
+            const nameInput = document.getElementById('name');
+            const phoneInput = document.getElementById('phone');
+
+            // Keep phone number, randomize name
+            const names = ['Alex Johnson', 'Sarah Williams', 'Michael Chen', 'Emma Davis', 'James Brown'];
+            const randomName = names[Math.floor(Math.random() * names.length)];
+            nameInput.placeholder = randomName;
+        }
+
+        function generateBusinessOptions() {
+            const container = document.getElementById('businessOptions');
+            container.innerHTML = businessTypes.map(business => `
+                <div class="radio-option" onclick="selectOption(this, 'business', '${business}')">
+                    <input type="radio" name="business" value="${business}">
+                    <span>${business}</span>
+                </div>
+            `).join('');
+        }
+
+        function selectOption(element, type, value) {
+            const parent = element.parentElement;
+            const siblings = parent.querySelectorAll('.radio-option');
+            siblings.forEach(sibling => sibling.classList.remove('selected'));
+            element.classList.add('selected');
+            element.querySelector('input').checked = true;
+            formData[type] = value;
+        }
+
+        function generateCalendar() {
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const dayAfterTomorrow = new Date(tomorrow);
+            dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 1);
+
+            availableDates = [tomorrow, dayAfterTomorrow];
+
+            renderCalendar();
+
+            // Pre-select tomorrow's date
+            setTimeout(() => {
+                const tomorrowDay = tomorrow.getDate();
+                const dayElements = document.querySelectorAll('.day.available');
+                dayElements.forEach(day => {
+                    if (parseInt(day.textContent) === tomorrowDay) {
+                        day.click();
+                    }
+                });
+            }, 100);
+        }
+
+        function renderCalendar() {
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+
+            document.getElementById('monthYear').textContent = 
+                currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDayOfWeek = firstDay.getDay();
+
+            const daysContainer = document.getElementById('daysContainer');
+            daysContainer.innerHTML = '';
+
+            // Empty cells for days before month starts
+            for (let i = 0; i < startingDayOfWeek; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'day empty';
+                daysContainer.appendChild(emptyDay);
+            }
+
+            // Days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                const currentDate = new Date(year, month, day);
+
+                const isAvailable = availableDates.some(d => 
+                    d.getDate() === day && 
+                    d.getMonth() === month && 
+                    d.getFullYear() === year
+                );
+
+                const isToday = currentDate.toDateString() === new Date().toDateString();
+                const isPast = currentDate < new Date() && !isToday;
+
+                if (isAvailable) {
+                    dayElement.className = 'day available';
+                    dayElement.textContent = day;
+                    dayElement.onclick = () => selectDate(day, month, year);
+                } else if (isPast) {
+                    dayElement.className = 'day disabled';
+                    dayElement.textContent = day;
+                } else {
+                    dayElement.className = 'day empty';
+                    dayElement.textContent = day;
+                    dayElement.style.color = '#cbd5e0';
+                }
+
+                if (isToday) {
+                    dayElement.classList.add('today');
+                }
+
+                daysContainer.appendChild(dayElement);
+            }
+        }
+
+        function selectDate(day, month, year) {
+            const allDays = document.querySelectorAll('.day.available');
+            allDays.forEach(d => d.classList.remove('selected'));
+
+            event.target.classList.add('selected');
+            formData.selectedDate = new Date(year, month, day);
+
+            generateTimeSlots();
+        }
+
+        function generateTimeSlots() {
+            const baseSlots = ['5:00 PM', '5:30 PM', '6:00 PM', '6:30 PM', '7:00 PM', '7:30 PM', '8:00 PM', '8:30 PM', '9:00 PM'];
+
+            // Randomly remove 4 slots to get 5 available slots
+            const shuffled = baseSlots.sort(() => Math.random() - 0.5);
+            const selectedSlots = shuffled.slice(0, 5).sort((a, b) => {
+                const timeA = parseInt(a.split(':')[0]);
+                const timeB = parseInt(b.split(':')[0]);
+                return timeA - timeB;
+            });
+
+            const timeGrid = document.getElementById('timeGrid');
+            timeGrid.innerHTML = selectedSlots.map(time => `
+                <div class="time-slot" onclick="selectTime(this, '${time}')">${time}</div>
+            `).join('');
+        }
+
+        function selectTime(element, time) {
+            const allSlots = document.querySelectorAll('.time-slot');
+            allSlots.forEach(slot => slot.classList.remove('selected'));
+            element.classList.add('selected');
+            formData.selectedTime = time;
+        }
+
+        function previousMonth() {
+            currentMonth.setMonth(currentMonth.getMonth() - 1);
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            currentMonth.setMonth(currentMonth.getMonth() + 1);
+            renderCalendar();
+        }
+
+        function goToStep(step) {
+            // Validation
+            if (step === 2 && (!formData.phone || !formData.name)) {
+                showError('Please fill in your phone number and name');
+                return;
+            }
+
+            if (step === 3 && (!formData.email || !formData.business || !formData.calls || !formData.missing)) {
+                showError('Please fill in all required fields');
+                return;
+            }
+
+            if (step === 4 && (!formData.selectedDate || !formData.selectedTime)) {
+                showError('Please select a date and time');
+                return;
+            }
+
+            // Update form data from inputs
+            formData.phone = document.getElementById('phone').value || formData.phone;
+            formData.name = document.getElementById('name').value || formData.name;
+            formData.email = document.getElementById('email').value || formData.email;
+
+            // Hide all sections
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show selected section
+            document.querySelector(`[data-section="${step}"]`).classList.add('active');
+
+            // Update step indicator
+            document.querySelectorAll('.step').forEach(s => {
+                const stepNum = parseInt(s.dataset.step);
+                s.classList.remove('active', 'completed');
+
+                if (stepNum < step) {
+                    s.classList.add('completed');
+                } else if (stepNum === step) {
+                    s.classList.add('active');
+                }
+            });
+
+            // If going to step 4, show confirmation
+            if (step === 4) {
+                const dateString = formData.selectedDate.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                document.getElementById('confirmationDetails').innerHTML = `
+                    <strong>${dateString}</strong> at <strong>${formData.selectedTime}</strong> (Toronto Time)
+                `;
+            }
+
+            // Clear error message
+            document.getElementById('errorMessage').classList.remove('show');
+
+            // Scroll to top
+            document.querySelector('.content').scrollTop = 0;
+        }
+
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            errorElement.textContent = message;
+            errorElement.classList.add('show');
+        }
+
+        function initializeForm() {
+            // Update phone input to format phone numbers
+            document.getElementById('phone').addEventListener('change', function() {
+                formData.phone = document.getElementById('countryCode').value + this.value;
+            });
+
+            document.getElementById('name').addEventListener('change', function() {
+                formData.name = this.value;
+            });
+
+            document.getElementById('email').addEventListener('change', function() {
+                formData.email = this.value;
+            });
+        }
+
+        function submitForm() {
+            // Prepare data for Google Sheets
+            const fullPhone = document.getElementById('countryCode').value + document.getElementById('phone').value;
+            const submissionData = {
+                name: formData.name,
+                phone: fullPhone,
+                email: formData.email,
+                business: formData.business,
+                calls: formData.calls,
+                missing: formData.missing,
+                date: formData.selectedDate.toLocaleDateString('en-US'),
+                time: formData.selectedTime
+            };
+
+            console.log('Form Data to Submit:', submissionData);
+
+            // Call Google Sheets integration
+            submitToGoogleSheets(submissionData);
+
+            // Show success message
+            alert('Thank you! Your call has been scheduled. Check your email for confirmation.');
+        }
+
+        function submitToGoogleSheets(data) {
+            // Replace with your Google Form URL and field entry IDs
+            const formURL = 'https://docs.google.com/forms/d/YOUR_FORM_ID/formResponse';
+
+            const formData = new FormData();
+            formData.append('entry.YOUR_FIELD_ID_1', data.name);           // Name
+            formData.append('entry.YOUR_FIELD_ID_2', data.phone);          // Phone
+            formData.append('entry.YOUR_FIELD_ID_3', data.email);          // Email
+            formData.append('entry.YOUR_FIELD_ID_4', data.business);       // Business
+            formData.append('entry.YOUR_FIELD_ID_5', data.calls);          // Calls per week
+            formData.append('entry.YOUR_FIELD_ID_6', data.missing);        // Missing calls
+            formData.append('entry.YOUR_FIELD_ID_7', data.date);           // Date
+            formData.append('entry.YOUR_FIELD_ID_8', data.time);           // Time
+
+            fetch(formURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: formData
+            }).then(() => {
+                console.log('Data submitted successfully');
+            }).catch(error => {
+                console.log('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>

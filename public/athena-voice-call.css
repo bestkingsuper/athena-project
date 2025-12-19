@@ -870,6 +870,407 @@ select.form-control {
   }
 }
 
+/* =========================================== */
+/* NEW PHONE CALL UI STYLES                      */
+/* =========================================== */
+
+/* Main Panel Styling */
+.voice-panel {
+  background: linear-gradient(180deg, #2D3436 0%, #1D2123 100%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25), 0 4px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 32px 24px;
+  color: var(--color-white);
+  transform: translateY(20px) scale(0.95);
+  transition: all 0.4s var(--ease-standard);
+  max-height: 500px; /* Adjust height as needed */
+  width: 320px; /* Adjust width as needed */
+
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.voice-panel.active {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+/* =========================================== */
+/* NEW USER SPEAKING FEEDBACK STYLES             */
+/* =========================================== */
+
+/* Keyframes for the shadow pulse animation */
+@keyframes pulse-shadow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 84, 89, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 20px rgba(255, 84, 89, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 84, 89, 0);
+  }
+}
+
+/* Class to apply the animation when the user is speaking */
+#stopCallBtn.user-speaking {
+  animation: pulse-shadow 0.5s infinite;
+}
+
+
+/* =========================================== */
+/* NEW CHAT BUTTON STYLES                        */
+/* =========================================== */
+
+/* Common style for phone action buttons if not already present */
+.phone-action-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transition: transform 0.2s ease;
+  
+  /* Absolute positioning relative to .phone-frame */
+  position: absolute;
+  bottom: 20px; 
+  z-index: 10;
+}
+
+.phone-action-btn:hover {
+  transform: scale(1.05);
+}
+
+.phone-action-btn:active {
+  transform: scale(0.95);
+}
+
+/* =========================================== */
+/* TEXT CHAT UI STYLES                           */
+/* =========================================== */
+
+/* Main Panel - Covers the phone screen */
+.text-chat-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+  z-index: 5; /* Above phone content, below buttons */
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+  transition: all 0.3s ease-in-out;
+  border-radius: 30px; /* Match phone corners */
+  overflow: hidden;
+}
+
+.text-chat-panel.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* Header */
+.text-chat-header {
+  padding: 15px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.text-chat-avatar img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.text-chat-info h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.status-dot {
+  font-size: 12px;
+  color: #10b981; /* Green */
+  display: flex;
+  align-items: center;
+}
+
+.status-dot::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #10b981;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+
+/* Messages Area */
+.text-chat-messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background-color: #fff;
+}
+
+.message {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.4;
+  position: relative;
+  word-wrap: break-word;
+}
+
+/* AI Message Style */
+.message.ai {
+  align-self: flex-start;
+  background-color: #f3f4f6;
+  color: #1f2937;
+  border-bottom-left-radius: 4px;
+}
+
+/* User Message Style */
+.message.user {
+  align-self: flex-end;
+  background-color: #3b82f6; /* Blue */
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+/* Input Area */
+.text-chat-input-container {
+  padding: 15px;
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+#textChatInput {
+  flex: 1;
+  padding: 10px 15px;
+  border-radius: 20px;
+  border: 1px solid #e5e7eb;
+  outline: none;
+  font-size: 14px;
+  background-color: #f9fafb;
+}
+
+#textChatInput:focus {
+  border-color: #3b82f6;
+}
+
+#textChatSendBtn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.phone-frame .chat-btn.active {
+  top: 16px;
+  right: 16px;
+  bottom: auto;   /* cancel bottom positioning */
+}
+
+#textChatSendBtn:hover {
+  background: #2563eb;
+}
+
+/* Button Active State */
+.chat-btn.active {
+  background-color: #ef4444; /* Turn red to indicate 'Close' */
+  transform: rotate(45deg); /* X effect */
+}
+
+
+/* Specific styles for the new Chat Button */
+.chat-btn {
+  background-color: #3B82F6; /* Bright Blue */
+  right: 20px; /* Positioned at the right */
+}
+
+/* Ensure the green call button stays on the left (if needed) */
+/* Assuming the existing button is something like #phoneBubbleBtn or similar inside the frame */
+/* If the existing green button is also inside .phone-frame, ensure it has 'left: 20px;' or similar */
+
+
+/* Hide chat history */
+#chatHistory {
+  display: none;
+}
+
+/* Header with Avatar and Status */
+.call-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.avatar-container {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.avatar-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.caller-name {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-white);
+  margin-bottom: 4px;
+}
+
+.call-status {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Pulsing Ring for Speaking Feedback */
+.pulsing-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  height: 120px;
+  border: 2px solid var(--color-teal-300);
+  border-radius: 50%;
+  opacity: 0;
+  animation: pulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
+  box-shadow: 0 0 10px var(--color-teal-300), inset 0 0 10px var(--color-teal-300);
+  display: none; /* Hidden by default */
+}
+
+.avatar-container.speaking .pulsing-ring {
+  display: block; /* Show when speaking */
+}
+
+@keyframes pulse {
+  0% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0.7;
+  }
+  100% {
+      transform: translate(-50%, -50%) scale(1.4);
+      opacity: 0;
+  }
+}
+
+/* Call Controls */
+.call-controls {
+  display: flex;
+  justify-content: center;
+  padding-top: 24px;
+}
+
+.call-button {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.call-button.hangup {
+  background-color: var(--color-red-500);
+  box-shadow: 0 3px 10px rgba(192, 21, 47, 0.4);
+}
+
+.call-button.hangup:hover {
+  background-color: var(--color-red-400);
+}
+
+.call-button.hangup svg {
+  width: 36px;
+  height: 36px;
+  transform: rotate(135deg); /* Corrects hangup icon orientation */
+  color: var(--color-white);
+}
+
+/* Close Button */
+.voice-panel__close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.voice-panel__close-btn:hover {
+  color: var(--color-white);
+}
+
+/* Hide original rectangular start/end buttons */
+#startCallBtn,
+#stopCallBtn:not(.hangup) {
+  display: none !important;
+}
+
+/* Ensure the red hangup button is visible when active */
+#stopCallBtn.hangup {
+  display: flex !important;
+}
+#stopCallBtn.hangup:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #555;
+  box-shadow: none;
+}
+
+
 .chat-message.user .chat-bubble {
   background: var(--color-primary);
   color: var(--color-btn-primary-text);
@@ -879,7 +1280,7 @@ select.form-control {
 
 .chat-message.ai .chat-bubble {
   background: var(--color-secondary);
-  color: var(--color-text);
+  color: var(--color-black);
   border-bottom-left-radius: var(--radius-sm);
 }
 
@@ -1038,7 +1439,7 @@ select.form-control {
 /* ===== PHONE BUBBLE BUTTON UPDATE ===== */
 
 .phone-bubble-btn.active {
-  background: var(--color-error);
+  background: rgb(13, 180, 13);
   animation: pulseActive 1s infinite;
 }
 
